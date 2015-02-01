@@ -16,7 +16,7 @@ public class NestiaTransit {
      */
     public static void main(String[] args) {
         DBManager DB = new DBManager();
-        DB.connect();
+        DB.executeSQL();
     }
     
 }

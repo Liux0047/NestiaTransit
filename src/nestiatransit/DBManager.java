@@ -24,8 +24,20 @@ public class DBManager {
     public DBManager() {
 
     }
+    
+    public void readWalkingData (int[][] walkingData) {
+        
+    }
+    
+    public void readTransitData (int[][] transitData) {
+        
+    }
+    
+    public void readMRTData (int[][] MRTData) {
+        
+    }
 
-    public void connect() {
+    public void executeSQL() {
 
         Connection conn = null;
         Statement statement = null;
@@ -34,14 +46,13 @@ public class DBManager {
             Class.forName("com.mysql.jdbc.Driver");
 
             //STEP 3: Open a connection
-            System.out.println("Connecting to database...");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-            //STEP 4: Execute a query
-            System.out.println("Creating statement...");
+            //STEP 4: Execute a querys
             statement = conn.createStatement();
             String sql;
             sql = "SELECT * FROM bus_stop_distance";
+            
             //STEP 5: Extract data from result set
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 //STEP 5: Extract data from result set
@@ -62,12 +73,7 @@ public class DBManager {
             }
             statement.close();
             conn.close();
-        } catch (SQLException se) {
-            //Handle erroresultSet for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle erroresultSet for Class.forName
-            e.printStackTrace();
+        } catch (SQLException | ClassNotFoundException se) {
         } finally {
             //finally block used to close resources
             try {
@@ -81,7 +87,6 @@ public class DBManager {
                     conn.close();
                 }
             } catch (SQLException se) {
-                se.printStackTrace();
             }//end finally try
         }//end try
     }
