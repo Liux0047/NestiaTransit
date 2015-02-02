@@ -11,7 +11,8 @@ import java.util.ArrayList;
  *
  * @author Allen
  */
-public class BusGraphManager extends GraphManager{
+public class BusGraphManager extends GraphManager {
+
     private ArrayList<BusStopDistance> prevBusStopDistances;
     private String prevServiceNum;
 
@@ -19,8 +20,7 @@ public class BusGraphManager extends GraphManager{
         this.prevBusStopDistances = new ArrayList<>();
         prevServiceNum = "";
     }
-    
-    
+
     public void buildBusGraph(BusStopDistance busStopDistance, int[][] busData) {
 
         if (this.prevServiceNum.equals(busStopDistance.getBusServiceNum())) {
@@ -33,7 +33,11 @@ public class BusGraphManager extends GraphManager{
                         + (int) (distance / GraphManager.BUS_SPEED_KMPS)
                         + GraphManager.GRID_TO_BUS_STOP;
 
-                busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] = duration;
+                if (busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] == 0
+                        || busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] > duration) {
+                    busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] = duration;
+                }
+
             }
 
         } else {    //if new service number
