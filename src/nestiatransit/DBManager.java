@@ -141,7 +141,7 @@ public class DBManager {
             //STEP 4: Execute a querys
             statement = conn.createStatement();
             String sql;
-            sql = "SELECT * FROM distance_mrt";
+            sql = "SELECT * FROM distance_mrt GROUP BY line";
 
             //STEP 5: Extract data from result set
             try (ResultSet resultSet = statement.executeQuery(sql)) {
@@ -215,11 +215,14 @@ public class DBManager {
         MRTGraphManager graphMgr = new MRTGraphManager();
         
         while (resultSet.next()) {
+            String line = resultSet.getString("line");
             //Retrieve by column name
             MRTDistance mrtDistance = new MRTDistance(
                     resultSet.getInt("source"),
                     resultSet.getInt("destination"),
-                    resultSet.getInt("duration"));
+                    resultSet.getInt("duration"),
+                    line
+            );
 
             graphMgr.buildMRTGraph(mrtDistance, distanceData);
 

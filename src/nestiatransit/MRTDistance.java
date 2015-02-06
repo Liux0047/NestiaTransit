@@ -14,11 +14,13 @@ public class MRTDistance {
     private int source;
     private int destination;
     private int duration;
+    private String line;
 
-    public MRTDistance(int source, int destination, int duration) {
+    public MRTDistance(int source, int destination, int duration, String line) {
         this.source = source;
         this.destination = destination;
         this.duration = duration;
+        this.line = line;
     }
 
     public int getSource() {
@@ -44,6 +46,15 @@ public class MRTDistance {
     public void setDuration(int duration) {
         this.duration = duration;
     }
+
+    public String getLine() {
+        return line;
+    }
+
+    public void setLine(String line) {
+        this.line = line;
+    }
+    
     
     
     
