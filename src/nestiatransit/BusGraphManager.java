@@ -21,21 +21,27 @@ public class BusGraphManager extends GraphManager {
         prevServiceNum = "";
     }
 
-    public void buildBusGraph(BusStopDistance busStopDistance, int[][] busData) {
+    public void buildBusGraph(BusStopDistance busStopDistance, int[][] distanceData) {
 
         if (this.prevServiceNum.equals(busStopDistance.getBusServiceNum())) {
 
             for (BusStopDistance prevStopDistance : this.prevBusStopDistances) {
                 double distance = (busStopDistance.getDistance() - prevStopDistance.getDistance());
+                if (distance < 0) {
+                    System.out.println("Negative distance encountered : ");
+                    System.out.println("" + busStopDistance.getBusServiceNum() + " - " + busStopDistance.getBusStopId());
+                    System.out.println(distance);
+                    System.exit(0);
+                }
                 int stopDelay = (prevBusStopDistances.size() - prevBusStopDistances.indexOf(prevStopDistance) - 1) * GraphManager.BUS_STOP_DELAY;
                 int duration = GraphManager.GRID_TO_BUS_STOP
                         + +stopDelay
                         + (int) (distance / GraphManager.BUS_SPEED_KMPS)
                         + GraphManager.GRID_TO_BUS_STOP;
 
-                if (busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] == 0
-                        || busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] > duration) {
-                    busData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] = duration;
+                if (distanceData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] == GraphManager.NO_EDGE
+                        || distanceData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] > duration) {
+                    distanceData[prevStopDistance.getGridIndex()][busStopDistance.getGridIndex()] = duration;
                 }
 
             }

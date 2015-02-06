@@ -17,8 +17,12 @@ public abstract class GraphManager {
     public static final int GRID_TO_MRT_STOP = 200;
     public static final int MRT_STOP_DELAY = 30;
 
-    public static final double BUS_SPEED_KMPS = 0.05;
-    public static final double MRT_SPEED_KMPS = 0.07;
+    public static final double BUS_SPEED_KMPS = 0.006;
+    public static final double MRT_SPEED_KMPS = 0.02;
+    
+    public static final int NUM_GIRD_PER_ROW = 168;
+    
+    public static final int NO_EDGE = -1;
 
     
 }

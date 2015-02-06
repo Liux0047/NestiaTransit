@@ -25,12 +25,8 @@ public class DBManager {
 
     }
 
-    public void readWalkingData(int[][] walkingData) {
-
-    }
-
-    public void readBusData(int[][] busData) {
-
+    public void readWalkingData(int[][] distanceData) {
+        
         Connection conn = null;
         Statement statement = null;
         try {
@@ -43,14 +39,72 @@ public class DBManager {
             //STEP 4: Execute a querys
             statement = conn.createStatement();
             String sql;
-            sql = "SELECT bus_stop_distance.*, area.grid_index FROM bus_stop_distance "
+            sql = "SELECT * FROM distance_walking_random";
+
+            //STEP 5: Extract data from result set
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
+                //STEP 5: Extract data from result set
+                this.buildWalkingGraph(resultSet, distanceData);
+                //STEP 6: Clean-up environment
+            }
+            statement.close();
+            conn.close();
+        } catch (SQLException | ClassNotFoundException se) {
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+            }//end finally try
+        }//end try
+
+    }
+
+    public void readBusData(int[][] distanceData) {
+
+        Connection conn = null;
+        Statement statement = null;
+        try {
+            //STEP 2: Register JDBC driver
+            Class.forName("com.mysql.jdbc.Driver");
+
+            //STEP 3: Open a connection
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            //STEP 4: Execute a query for SBS bus
+            statement = conn.createStatement();
+            String sqlSBS;
+            sqlSBS = "SELECT bus_stop_distance.*, area.grid_index FROM bus_stop_distance "
                     + "INNER JOIN bus_stop ON bus_stop_distance.bus_stop_id = bus_stop.bus_stop_id "
                     + "INNER JOIN area ON bus_stop.area_id = area.area_id";
 
             //STEP 5: Extract data from result set
-            try (ResultSet resultSet = statement.executeQuery(sql)) {
+            try (ResultSet resultSet = statement.executeQuery(sqlSBS)) {
                 //STEP 5: Extract data from result set
-                this.buildBusGraph(resultSet, busData);
+                this.buildBusGraph(resultSet, distanceData);
+                //STEP 6: Clean-up environment
+            }
+            statement.close();
+            
+            //STEP 4: Execute a query for SMART bus
+            statement = conn.createStatement();
+            String sqlSMART;
+            sqlSMART = "SELECT bus_stop_distance_SMRT.*, area.grid_index FROM bus_stop_distance "
+                    + "INNER JOIN bus_stop ON bus_stop_distance.bus_stop_id = bus_stop.bus_stop_id "
+                    + "INNER JOIN area ON bus_stop.area_id = area.area_id";
+
+            //STEP 5: Extract data from result set
+            try (ResultSet resultSet = statement.executeQuery(sqlSMART)) {
+                //STEP 5: Extract data from result set
+                this.buildBusGraph(resultSet, distanceData);
                 //STEP 6: Clean-up environment
             }
             statement.close();
@@ -73,12 +127,8 @@ public class DBManager {
         }//end try
     }
 
-    public void readMRTData(int[][] MRTData) {
-
-    }
-
-    public void executeSQL() {
-
+    public void readMRTData(int[][] distanceData) {
+        
         Connection conn = null;
         Statement statement = null;
         try {
@@ -91,24 +141,12 @@ public class DBManager {
             //STEP 4: Execute a querys
             statement = conn.createStatement();
             String sql;
-            sql = "SELECT * FROM bus_stop_distance";
+            sql = "SELECT * FROM distance_mrt";
 
             //STEP 5: Extract data from result set
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 //STEP 5: Extract data from result set
-                while (resultSet.next()) {
-                    //Retrieve by column name
-                    String serviceNum = resultSet.getString("bus_service_no");
-                    int stopId = resultSet.getInt("bus_stop_id");
-                    double distance = resultSet.getDouble("distance_km");
-                    int direction = resultSet.getInt("direction");
-
-                    //Display values
-                    System.out.print("serviceNum: " + serviceNum);
-                    System.out.print(", stopId: " + stopId);
-                    System.out.print(", distance: " + distance);
-                    System.out.println(", direction: " + direction);
-                }
+                this.buildMRTGraph(resultSet, distanceData);
                 //STEP 6: Clean-up environment
             }
             statement.close();
@@ -129,9 +167,31 @@ public class DBManager {
             } catch (SQLException se) {
             }//end finally try
         }//end try
+
     }
 
-    private void buildBusGraph(ResultSet resultSet, int[][] busData) throws SQLException {
+
+    private void buildWalkingGraph(ResultSet resultSet, int[][] distanceData) throws SQLException {
+        
+        WalkingGraphManager graphMgr = new WalkingGraphManager();
+        
+        while (resultSet.next()) {
+            //Retrieve by column name
+            WalkingDistance walkingDistance = new WalkingDistance(
+                    resultSet.getInt("source"),
+                    resultSet.getInt("destination"),
+                    resultSet.getInt("distance"),
+                    resultSet.getInt("duration"));
+
+            if (walkingDistance.getSource() != walkingDistance.getDestination()){                
+                graphMgr.buildWalkingGraph(walkingDistance, distanceData);
+            }
+
+        }
+
+    }
+
+    private void buildBusGraph(ResultSet resultSet, int[][] distanceData) throws SQLException {
         
         BusGraphManager graphMgr = new BusGraphManager();
         
@@ -145,10 +205,25 @@ public class DBManager {
                     resultSet.getInt("direction"),
                     resultSet.getInt("grid_index"));
 
-            graphMgr.buildBusGraph(busStopDistance, busData);
+            graphMgr.buildBusGraph(busStopDistance, distanceData);
 
         }
 
     }
 
+    private void buildMRTGraph(ResultSet resultSet, int[][] distanceData) throws SQLException {
+        MRTGraphManager graphMgr = new MRTGraphManager();
+        
+        while (resultSet.next()) {
+            //Retrieve by column name
+            MRTDistance mrtDistance = new MRTDistance(
+                    resultSet.getInt("source"),
+                    resultSet.getInt("destination"),
+                    resultSet.getInt("duration"));
+
+            graphMgr.buildMRTGraph(mrtDistance, distanceData);
+
+        }
+        
+    }
 }
