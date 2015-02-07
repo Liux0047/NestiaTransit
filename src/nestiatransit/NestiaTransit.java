@@ -5,6 +5,8 @@
  */
 package nestiatransit;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Allen
@@ -26,7 +28,7 @@ public class NestiaTransit {
         System.out.println("Finished Reading Bus data");
         DB.readMRTData(distanceData);
         System.out.println("Finished Reading MRT data");
-        
+
         System.out.println("Starting APSP");
         APSP(distanceData);
 
@@ -57,7 +59,20 @@ public class NestiaTransit {
     //Floyd's Algorithem, All pair shortest path
     private static void APSP(int[][] distanceData) {
         int n = GraphManager.VERTEX_COUNT;
-        for (int k = 0; k < 3; k++) {
+        
+        //elimiate isolated vertex
+        System.out.println("Elimiating isolated vertices");
+        ArrayList<Integer> connectedVertices = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (distanceData[i][j] != GraphManager.NO_EDGE) {
+                    connectedVertices.add(i);
+                    break;
+                }
+            }
+        }
+
+        for (int k : connectedVertices) {
             System.out.println("In loop k = " + k);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
@@ -71,7 +86,5 @@ public class NestiaTransit {
             }
         }
     }
-    
-    
 
 }
