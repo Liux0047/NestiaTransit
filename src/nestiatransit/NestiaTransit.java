@@ -21,12 +21,17 @@ public class NestiaTransit {
         initData(distanceData);
 
         DB.readWalkingData(distanceData);
+        System.out.println("Finished Reading walking data");
         DB.readBusData(distanceData);
+        System.out.println("Finished Reading Bus data");
         DB.readMRTData(distanceData);
-
+        System.out.println("Finished Reading MRT data");
+        
+        System.out.println("Starting APSP");
         APSP(distanceData);
 
-        displayResult(distanceData);
+        DB.insertDistance(distanceData);
+        //displayResult(distanceData);
     }
 
     private static void initData(int[][] distanceData) {
@@ -52,7 +57,8 @@ public class NestiaTransit {
     //Floyd's Algorithem, All pair shortest path
     private static void APSP(int[][] distanceData) {
         int n = GraphManager.VERTEX_COUNT;
-        for (int k = 0; k < n; k++) {
+        for (int k = 0; k < 3; k++) {
+            System.out.println("In loop k = " + k);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     if (distanceData[i][k] != GraphManager.NO_EDGE && distanceData[k][j] != GraphManager.NO_EDGE) {
@@ -65,5 +71,7 @@ public class NestiaTransit {
             }
         }
     }
+    
+    
 
 }

@@ -23,6 +23,8 @@ public abstract class GraphManager {
     public static final int NUM_GIRD_PER_ROW = 168;
     
     public static final int NO_EDGE = -1;
+    
+    public static final int MAX_TRANSIT_TIME = 3600;
 
     
 }

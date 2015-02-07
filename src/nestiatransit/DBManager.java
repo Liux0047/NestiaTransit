@@ -26,7 +26,7 @@ public class DBManager {
     }
 
     public void readWalkingData(int[][] distanceData) {
-        
+
         Connection conn = null;
         Statement statement = null;
         try {
@@ -93,7 +93,7 @@ public class DBManager {
                 //STEP 6: Clean-up environment
             }
             statement.close();
-            
+
             //STEP 4: Execute a query for SMART bus
             statement = conn.createStatement();
             String sqlSMART;
@@ -128,7 +128,7 @@ public class DBManager {
     }
 
     public void readMRTData(int[][] distanceData) {
-        
+
         Connection conn = null;
         Statement statement = null;
         try {
@@ -170,11 +170,61 @@ public class DBManager {
 
     }
 
+    public void insertDistance(int[][] distanceData) {
+        Connection conn = null;
+        Statement statement = null;
+        try {
+            //STEP 2: Register JDBC driver
+            Class.forName("com.mysql.jdbc.Driver");
+
+            //STEP 3: Open a connection
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            //STEP 4: Execute a querys
+            statement = conn.createStatement();
+            String sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES (?, ?, ?)";
+
+            int n = GraphManager.VERTEX_COUNT;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] < GraphManager.MAX_TRANSIT_TIME) {
+                        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                        preparedStatement.setInt(1, i);
+                        preparedStatement.setInt(2, j);
+                        preparedStatement.setInt(3, distanceData[i][j]);
+                        // execute insert SQL stetement
+                        preparedStatement.executeUpdate();
+
+                    }
+                }
+            }
+
+            statement.close();
+            conn.close();
+        } catch (SQLException | ClassNotFoundException se) {
+            System.out.println(se.getMessage());
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+            }//end finally try
+        }//end try
+
+    }
 
     private void buildWalkingGraph(ResultSet resultSet, int[][] distanceData) throws SQLException {
-        
+
         WalkingGraphManager graphMgr = new WalkingGraphManager();
-        
+
         while (resultSet.next()) {
             //Retrieve by column name
             WalkingDistance walkingDistance = new WalkingDistance(
@@ -183,7 +233,7 @@ public class DBManager {
                     resultSet.getInt("distance"),
                     resultSet.getInt("duration"));
 
-            if (walkingDistance.getSource() != walkingDistance.getDestination()){                
+            if (walkingDistance.getSource() != walkingDistance.getDestination()) {
                 graphMgr.buildWalkingGraph(walkingDistance, distanceData);
             }
 
@@ -192,9 +242,9 @@ public class DBManager {
     }
 
     private void buildBusGraph(ResultSet resultSet, int[][] distanceData) throws SQLException {
-        
+
         BusGraphManager graphMgr = new BusGraphManager();
-        
+
         while (resultSet.next()) {
             String serviceNum = resultSet.getString("bus_service_no");
             //Retrieve by column name
@@ -213,7 +263,7 @@ public class DBManager {
 
     private void buildMRTGraph(ResultSet resultSet, int[][] distanceData) throws SQLException {
         MRTGraphManager graphMgr = new MRTGraphManager();
-        
+
         while (resultSet.next()) {
             String line = resultSet.getString("line");
             //Retrieve by column name
@@ -227,6 +277,6 @@ public class DBManager {
             graphMgr.buildMRTGraph(mrtDistance, distanceData);
 
         }
-        
+
     }
 }
