@@ -63,14 +63,17 @@ public class NestiaTransit {
         //elimiate isolated vertex
         System.out.println("Elimiating isolated vertices");
         ArrayList<Integer> connectedVertices = new ArrayList<>();
+        int numConnected = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (distanceData[i][j] != GraphManager.NO_EDGE) {
                     connectedVertices.add(i);
+                    numConnected++;
                     break;
                 }
             }
         }
+        System.out.println("Connected vertices: " + numConnected);
 
         for (int k : connectedVertices) {
             System.out.println("In loop k = " + k);

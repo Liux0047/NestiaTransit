@@ -184,10 +184,11 @@ public class DBManager {
             statement = conn.createStatement();
             String sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES (?, ?, ?)";
 
+            System.out.println("Inserting into Database...");
             int n = GraphManager.VERTEX_COUNT;
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] < GraphManager.MAX_TRANSIT_TIME) {
+                    if (distanceData[i][j] != GraphManager.NO_EDGE) {
                         PreparedStatement preparedStatement = conn.prepareStatement(sql);
                         preparedStatement.setInt(1, i);
                         preparedStatement.setInt(2, j);
