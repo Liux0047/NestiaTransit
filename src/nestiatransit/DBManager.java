@@ -6,6 +6,7 @@
 package nestiatransit;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -170,9 +171,9 @@ public class DBManager {
 
     }
 
-    public void insertDistance(int[][] distanceData) {
+    public void insertDistance(int[][] distanceData, ArrayList<Integer> connectedVertices) {
         Connection conn = null;
-        Statement statement = null;
+        PreparedStatement preparedStatement = null;
         try {
             //STEP 2: Register JDBC driver
             Class.forName("com.mysql.jdbc.Driver");
@@ -180,35 +181,35 @@ public class DBManager {
             //STEP 3: Open a connection
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-            //STEP 4: Execute a querys
-            statement = conn.createStatement();
-            String sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES (?, ?, ?)";
-
             System.out.println("Inserting into Database...");
-            int n = GraphManager.VERTEX_COUNT;
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (distanceData[i][j] != GraphManager.NO_EDGE) {
-                        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            for (int i : connectedVertices) {
+                System.out.println("Inserting source " + i);
+                for (int j : connectedVertices) {
+                    if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] <= GraphManager.MAX_TRANSIT_TIME) {
+
+                        //STEP 4: Execute a querys
+                        String sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES (?, ?, ?)";
+
+                        preparedStatement = conn.prepareStatement(sql);
                         preparedStatement.setInt(1, i);
                         preparedStatement.setInt(2, j);
                         preparedStatement.setInt(3, distanceData[i][j]);
                         // execute insert SQL stetement
                         preparedStatement.executeUpdate();
 
+                        preparedStatement.close();
+
                     }
                 }
             }
-
-            statement.close();
             conn.close();
         } catch (SQLException | ClassNotFoundException se) {
             System.out.println(se.getMessage());
         } finally {
             //finally block used to close resources
             try {
-                if (statement != null) {
-                    statement.close();
+                if (preparedStatement != null) {
+                    preparedStatement.close();
                 }
             } catch (SQLException se2) {
             }// nothing we can do

@@ -28,11 +28,13 @@ public class NestiaTransit {
         System.out.println("Finished Reading Bus data");
         DB.readMRTData(distanceData);
         System.out.println("Finished Reading MRT data");
+        
+        ArrayList<Integer> connectedVertices = getConnectedVertices(distanceData);
 
         System.out.println("Starting APSP");
-        APSP(distanceData);
+        APSP(distanceData, connectedVertices);
 
-        DB.insertDistance(distanceData);
+        DB.insertDistance(distanceData, connectedVertices);
         //displayResult(distanceData);
     }
 
@@ -56,10 +58,10 @@ public class NestiaTransit {
         }
     }
 
-    //Floyd's Algorithem, All pair shortest path
-    private static void APSP(int[][] distanceData) {
+    private static ArrayList<Integer> getConnectedVertices(int[][] distanceData) {
+
         int n = GraphManager.VERTEX_COUNT;
-        
+
         //elimiate isolated vertex
         System.out.println("Elimiating isolated vertices");
         ArrayList<Integer> connectedVertices = new ArrayList<>();
@@ -73,12 +75,19 @@ public class NestiaTransit {
                 }
             }
         }
+
         System.out.println("Connected vertices: " + numConnected);
+        return connectedVertices;
+    }
+
+    //Floyd's Algorithem, All pair shortest path
+    private static void APSP(int[][] distanceData, ArrayList<Integer> connectedVertices) {
 
         for (int k : connectedVertices) {
+            //for (int k = 0; k<3 ; k++) {
             System.out.println("In loop k = " + k);
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
+            for (int i : connectedVertices) {
+                for (int j : connectedVertices) {
                     if (distanceData[i][k] != GraphManager.NO_EDGE && distanceData[k][j] != GraphManager.NO_EDGE) {
                         int sum = (distanceData[i][k] + distanceData[k][j]);
                         if (distanceData[i][j] == GraphManager.NO_EDGE || sum < distanceData[i][j]) {
