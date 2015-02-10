@@ -142,7 +142,7 @@ public class DBManager {
             //STEP 4: Execute a querys
             statement = conn.createStatement();
             String sql;
-            sql = "SELECT * FROM distance_mrt GROUP BY line";
+            sql = "SELECT * FROM distance_mrt";
 
             //STEP 5: Extract data from result set
             try (ResultSet resultSet = statement.executeQuery(sql)) {
