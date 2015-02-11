@@ -28,11 +28,13 @@ public class NestiaTransit {
         System.out.println("Finished Reading Bus data");
         DB.readMRTData(distanceData);
         System.out.println("Finished Reading MRT data");
-        
+
         ArrayList<Integer> connectedVertices = getConnectedVertices(distanceData);
 
         System.out.println("Starting APSP");
         APSP(distanceData, connectedVertices);
+        
+        averageTranspose(distanceData);
 
         DB.insertDistance(distanceData, connectedVertices);
         //displayResult(distanceData);
@@ -95,6 +97,18 @@ public class NestiaTransit {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private static void averageTranspose(int[][] distanceData) {
+        int n = GraphManager.VERTEX_COUNT;
+        int average;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                average = (distanceData[i][j] + distanceData[j][i] + 1) / 2;
+                distanceData[i][j] = average;
+                distanceData[j][i] = average;
             }
         }
     }
