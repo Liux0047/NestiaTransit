@@ -187,8 +187,7 @@ public class DBManager {
                 System.out.println("Inserting source " + i);
                 sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES ";
                 for (int j : connectedVertices) {
-                    //if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] <= GraphManager.MAX_TRANSIT_TIME) {
-                    if (distanceData[i][j] != GraphManager.NO_EDGE) {
+                    if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] <= GraphManager.MAX_TRANSIT_TIME) {
 
                         //STEP 4: Execute a querys
                         sql += "(" + i + ", " + j + ", " + distanceData[i][j] + " ),";
@@ -203,7 +202,7 @@ public class DBManager {
 
                 statement = conn.createStatement();
                 statement.executeUpdate(sql);
-                
+
                 statement.close();
             }
             conn.close();

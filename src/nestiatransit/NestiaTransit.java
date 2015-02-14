@@ -33,7 +33,7 @@ public class NestiaTransit {
 
         System.out.println("Starting APSP");
         APSP(distanceData, connectedVertices);
-        
+
         averageTranspose(distanceData);
 
         DB.insertDistance(distanceData, connectedVertices);
@@ -85,8 +85,8 @@ public class NestiaTransit {
     //Floyd's Algorithem, All pair shortest path
     private static void APSP(int[][] distanceData, ArrayList<Integer> connectedVertices) {
 
-        //for (int k : connectedVertices) {
-            for (int k = 0; k<3 ; k++) {
+        for (int k : connectedVertices) {
+            //for (int k = 0; k<3 ; k++) {
             System.out.println("In loop k = " + k);
             for (int i : connectedVertices) {
                 for (int j : connectedVertices) {
