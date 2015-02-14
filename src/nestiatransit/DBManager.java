@@ -173,7 +173,8 @@ public class DBManager {
 
     public void insertDistance(int[][] distanceData, ArrayList<Integer> connectedVertices) {
         Connection conn = null;
-        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        String sql;
         try {
             //STEP 2: Register JDBC driver
             Class.forName("com.mysql.jdbc.Driver");
@@ -184,23 +185,26 @@ public class DBManager {
             System.out.println("Inserting into Database...");
             for (int i : connectedVertices) {
                 System.out.println("Inserting source " + i);
+                sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES ";
                 for (int j : connectedVertices) {
-                    if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] <= GraphManager.MAX_TRANSIT_TIME) {
+                    //if (distanceData[i][j] != GraphManager.NO_EDGE && distanceData[i][j] <= GraphManager.MAX_TRANSIT_TIME) {
+                    if (distanceData[i][j] != GraphManager.NO_EDGE) {
 
                         //STEP 4: Execute a querys
-                        String sql = "INSERT INTO `crawler`.`distance_transit` (`source`, `destination`, `duration`) VALUES (?, ?, ?)";
-
-                        preparedStatement = conn.prepareStatement(sql);
-                        preparedStatement.setInt(1, i);
-                        preparedStatement.setInt(2, j);
-                        preparedStatement.setInt(3, distanceData[i][j]);
-                        // execute insert SQL stetement
-                        preparedStatement.executeUpdate();
-
-                        preparedStatement.close();
+                        sql += "(" + i + ", " + j + ", " + distanceData[i][j] + " ),";
 
                     }
                 }
+
+                //remove last comma
+                if (sql.length() > 0 && sql.charAt(sql.length() - 1) == ',') {
+                    sql = sql.substring(0, sql.length() - 1);
+                }
+
+                statement = conn.createStatement();
+                statement.executeUpdate(sql);
+                
+                statement.close();
             }
             conn.close();
         } catch (SQLException | ClassNotFoundException se) {
@@ -208,8 +212,8 @@ public class DBManager {
         } finally {
             //finally block used to close resources
             try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
+                if (statement != null) {
+                    statement.close();
                 }
             } catch (SQLException se2) {
             }// nothing we can do
