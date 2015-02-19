@@ -12,9 +12,9 @@ package nestiatransit;
 public abstract class GraphManager {
 
     public static final int VERTEX_COUNT = 15713;
-    public static final int GRID_TO_BUS_STOP = 200;
+    public static final int GRID_TO_BUS_STOP = 100;
     public static final int BUS_STOP_DELAY = 30;
-    public static final int GRID_TO_MRT_STOP = 300;
+    public static final int GRID_TO_MRT_STOP = 100;
     public static final int MRT_STOP_DELAY = 30;
 
     public static final double BUS_SPEED_KMPS = 0.006;
