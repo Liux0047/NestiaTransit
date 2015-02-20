@@ -96,21 +96,23 @@ public class DBManager {
             }
             statement.close();
 
-            //STEP 4: Execute a query for SMART bus
-            statement = conn.createStatement();
-            String sqlSMART;
-            sqlSMART = "SELECT bus_stop_distance_SMRT.*, area.grid_index FROM bus_stop_distance "
-                    + "INNER JOIN bus_stop ON bus_stop_distance.bus_stop_id = bus_stop.bus_stop_id "
-                    + "INNER JOIN area ON bus_stop.area_id = area.area_id"
-                    + "ORDER BY direction, bus_service_no";
+            /*
+             //STEP 4: Execute a query for SMART bus
+             statement = conn.createStatement();
+             String sqlSMART;
+             sqlSMART = "SELECT bus_stop_distance_SMRT.*, area.grid_index FROM bus_stop_distance "
+             + "INNER JOIN bus_stop ON bus_stop_distance.bus_stop_id = bus_stop.bus_stop_id "
+             + "INNER JOIN area ON bus_stop.area_id = area.area_id"
+             + "ORDER BY direction, bus_service_no";
 
-            //STEP 5: Extract data from result set
-            try (ResultSet resultSet = statement.executeQuery(sqlSMART)) {
-                //STEP 5: Extract data from result set
-                this.buildBusGraph(resultSet, distanceData);
-                //STEP 6: Clean-up environment
-            }
-            statement.close();
+             //STEP 5: Extract data from result set
+             try (ResultSet resultSet = statement.executeQuery(sqlSMART)) {
+             //STEP 5: Extract data from result set
+             this.buildBusGraph(resultSet, distanceData);
+             //STEP 6: Clean-up environment
+             }
+             statement.close();
+             */
             conn.close();
         } catch (SQLException | ClassNotFoundException se) {
         } finally {
