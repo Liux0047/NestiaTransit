@@ -86,7 +86,7 @@ public class DBManager {
             sqlSBS = "SELECT bus_stop_distance.*, area.grid_index FROM bus_stop_distance "
                     + "INNER JOIN bus_stop ON bus_stop_distance.bus_stop_id = bus_stop.bus_stop_id "
                     + "INNER JOIN area ON bus_stop.area_id = area.area_id "
-                    + "ORDER BY direction, bus_service_no";
+                    + "ORDER BY direction, bus_service_no, distance_km";
 
             //STEP 5: Extract data from result set
             try (ResultSet resultSet = statement.executeQuery(sqlSBS)) {

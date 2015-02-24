@@ -35,7 +35,7 @@ public class BusGraphManager extends GraphManager {
                 }
                 int stopDelay = (prevBusStopDistances.size() - prevBusStopDistances.indexOf(prevStopDistance) - 1) * GraphManager.BUS_STOP_DELAY;
                 int duration = GraphManager.GRID_TO_BUS_STOP
-                        + +stopDelay
+                        + stopDelay
                         + (int) (distance / GraphManager.BUS_SPEED_KMPS)
                         + GraphManager.GRID_TO_BUS_STOP;
 
